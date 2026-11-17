@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -13,6 +14,31 @@ void printHUD() {
     std::cout << "Здоровье: " << hp << "/" << kMaxHp
               << " | Крышки: " << resources << "\n";
     std::cout << "----------------------------------------------\n";
+}
+
+void randomEncounter() {
+    const int roll = 1 + std::rand() % 20;
+    std::cout << "\nБросок D20: " << roll << ". ";
+
+    if (roll == 1) {
+        const int damage = 30;
+        hp = std::max(0, hp - damage);
+        score = std::max(0LL, score - 100);
+        std::cout << "Критическое проклятие! -" << damage
+                  << " HP и -100 очков.\n";
+    } else if (roll == 20) {
+        score += 500;
+        resources += 30;
+        std::cout << "ДЖЕКПОТ! +500 очков и +30 крышек.\n";
+    } else {
+        int bonus = roll * 10;
+        if (roll >= 18) {
+            bonus *= 3;
+            std::cout << "Критический множитель x3! ";
+        }
+        score += bonus;
+        std::cout << "+" << bonus << " очков.\n";
+    }
 }
 
 int main() {
@@ -41,7 +67,7 @@ int main() {
                 std::cout << "\nМодуль убежища в разработке (Issue #2).\n";
                 break;
             case 3:
-                std::cout << "\nМодуль случайных событий в разработке (Issue #3).\n";
+                randomEncounter();
                 break;
             case 0:
                 hp = 0;
