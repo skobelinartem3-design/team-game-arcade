@@ -1,0 +1,17 @@
+name: Build game
+
+on:
+  push:
+    branches: [main, "release/demo-game"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile with warnings enabled
+        run: g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror game.cpp -o game
+      - name: Run a short console session
+        run: printf '%s\n' 0 | ./game
