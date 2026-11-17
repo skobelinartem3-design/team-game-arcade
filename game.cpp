@@ -1,8 +1,11 @@
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 
 constexpr int kMaxHp = 100;
+constexpr int kCampCost = 20;
+
 int hp = kMaxHp;
 int resources = 50;
 long long score = 0;
@@ -15,10 +18,73 @@ void printHUD() {
     std::cout << "----------------------------------------------\n";
 }
 
-int main() {
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+void riskyRaid() {
+    std::cout << "\nВы отправились в логово мутантов...\n";
+    const int roll = std::rand() % 100;
+
+    if (roll < 50) {
+        const int reward = 200 + std::rand() % 301;
+        const int loot = 20 + std::rand() % 31;
+        score += reward;
+        resources += loot;
+        std::cout << "Удачный рейд! +" << reward << " очков и +" << loot
+                  << " крышек.\n";
+    } else {
+        const int damage = 30 + std::rand() % 21;
+        hp = std::max(0, hp - damage);
+        std::cout << "Мутанты ранили вас. -" << damage << " HP.\n";
+    }
+}
+
+void visitShelter() {
+    if (resources < kCampCost) {
+        std::cout << "\nНе хватает крышек на аптечку. Нужно "
+                  << kCampCost << ", у вас " << resources << ".\n";
+        return;
+    }
+
+    resources -= kCampCost;
+    const int requestedHeal = 25 + std::rand() % 21;
+    const int oldHp = hp;
+    hp = std::min(kMaxHp, hp + requestedHeal);
+    std::cout << "\nВы использовали аптечку за " << kCampCost
+              << " крышек и восстановили " << (hp - oldHp) << " HP.\n";
+}
+
+void randomEncounter() {
+    const int roll = 1 + std::rand() % 20;
+    std::cout << "\nБросок D20: " << roll << ". ";
+
+    if (roll == 1) {
+        const int damage = 30;
+        hp = std::max(0, hp - damage);
+        score = std::max(0LL, score - 100);
+        std::cout << "Критическое проклятие! -" << damage
+                  << " HP и -100 очков.\n";
+    } else if (roll == 20) {
+        score += 500;
+        resources += 30;
+        std::cout << "ДЖЕКПОТ! +500 очков и +30 крышек.\n";
+    } else {
+        int bonus = roll * 10;
+        if (roll >= 18) {
+            bonus *= 3;
+            std::cout << "Критический множитель x3! ";
+        }
+        score += bonus;
+        std::cout << "+" << bonus << " очков.\n";
+    }
+}
+
+int main(int argc, char* argv[]) {
+    unsigned int seed = static_cast<unsigned int>(std::time(nullptr));
+    if (argc > 1) {
+        seed = static_cast<unsigned int>(std::strtoul(argv[1], nullptr, 10));
+    }
+    std::srand(seed);
     int choice = 0;
-    std::cout << ">>> FALLOUT: БИТВА ЗА РЕКОРД <<<\n";
+
+    std::cout << ">>> FALLOUT: БИТВА ЗА РЕКОРД (seed " << seed << ") <<<\n";
 
     while (hp > 0) {
         printHUD();
@@ -35,13 +101,13 @@ int main() {
 
         switch (choice) {
             case 1:
-                std::cout << "\nМодуль рейда в разработке (Issue #1).\n";
+                riskyRaid();
                 break;
             case 2:
-                std::cout << "\nМодуль убежища в разработке (Issue #2).\n";
+                visitShelter();
                 break;
             case 3:
-                std::cout << "\nМодуль случайных событий в разработке (Issue #3).\n";
+                randomEncounter();
                 break;
             case 0:
                 hp = 0;
@@ -61,3 +127,4 @@ int main() {
               << score << " очков.\n";
     return 0;
 }
+
