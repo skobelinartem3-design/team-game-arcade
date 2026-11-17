@@ -13,5 +13,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compile with warnings enabled
         run: g++ -std=c++17 -Wall -Wextra -Wpedantic -Werror game.cpp -o game
-      - name: Run a short console session
-        run: printf '%s\n' 0 | ./game
+      - name: Run deterministic console session
+        run: |
+          printf '%s\n' 3 3 3 3 3 3 3 3 3 3 0 | ./game 4242
