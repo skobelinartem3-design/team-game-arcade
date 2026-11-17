@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -13,6 +14,24 @@ void printHUD() {
     std::cout << "Здоровье: " << hp << "/" << kMaxHp
               << " | Крышки: " << resources << "\n";
     std::cout << "----------------------------------------------\n";
+}
+
+void riskyRaid() {
+    std::cout << "\nВы отправились в логово мутантов...\n";
+    const int roll = std::rand() % 100;
+
+    if (roll < 50) {
+        const int reward = 200 + std::rand() % 301;
+        const int loot = 20 + std::rand() % 31;
+        score += reward;
+        resources += loot;
+        std::cout << "Удачный рейд! +" << reward << " очков и +" << loot
+                  << " крышек.\n";
+    } else {
+        const int damage = 30 + std::rand() % 21;
+        hp = std::max(0, hp - damage);
+        std::cout << "Мутанты ранили вас. -" << damage << " HP.\n";
+    }
 }
 
 int main() {
@@ -35,7 +54,7 @@ int main() {
 
         switch (choice) {
             case 1:
-                std::cout << "\nМодуль рейда в разработке (Issue #1).\n";
+                riskyRaid();
                 break;
             case 2:
                 std::cout << "\nМодуль убежища в разработке (Issue #2).\n";
