@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -13,6 +14,21 @@ void printHUD() {
     std::cout << "Здоровье: " << hp << "/" << kMaxHp
               << " | Крышки: " << resources << "\n";
     std::cout << "----------------------------------------------\n";
+}
+
+void visitShelter() {
+    if (resources < kCampCost) {
+        std::cout << "\nНе хватает крышек на аптечку. Нужно "
+                  << kCampCost << ", у вас " << resources << ".\n";
+        return;
+    }
+
+    resources -= kCampCost;
+    const int requestedHeal = 25 + std::rand() % 21;
+    const int oldHp = hp;
+    hp = std::min(kMaxHp, hp + requestedHeal);
+    std::cout << "\nВы использовали аптечку за " << kCampCost
+              << " крышек и восстановили " << (hp - oldHp) << " HP.\n";
 }
 
 int main() {
@@ -38,7 +54,7 @@ int main() {
                 std::cout << "\nМодуль рейда в разработке (Issue #1).\n";
                 break;
             case 2:
-                std::cout << "\nМодуль убежища в разработке (Issue #2).\n";
+                visitShelter();
                 break;
             case 3:
                 std::cout << "\nМодуль случайных событий в разработке (Issue #3).\n";
